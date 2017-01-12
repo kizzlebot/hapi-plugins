@@ -1,0 +1,56 @@
+{
+    "name": "@kizzlebot/hapi-plugins",
+    "description": "Hapi plugin to autoload other plugins.",
+    "version": "0.0.1",
+    "author": "James Choi <james.choi@flexshopper.com>",
+    "bugs": {
+        "url": "https://github.com/FlexShopper/hapi-plugins/issues"
+    },
+    "dependencies": {
+        "async": "^2.1.4",
+        "glob": "^7.0.3",
+        "hoek": "^4.0.1",
+        "joi": "^10.1.0",
+        "lodash": "^4.17.4",
+        "pre-commit": "^1.2.2"
+    },
+    "devDependencies": {
+        "@flexshopper/eslint-config-flexshopper": "^5.0.0",
+        "code": "^3.0.2",
+        "eslint": "^2.13.1",
+        "eslint-config-yandex": "^1.0.6",
+        "estraverse-fb": "^1.3.1",
+        "fixpack": "^2.3.1",
+        "hapi": "^14.2.0",
+        "lab": "^11.0.0",
+        "nodemon": "^1.9.2"
+    },
+    "homepage": "https://github.com/FlexShopper/hapi-plugins#readme",
+    "keywords": [
+        "hapi",
+        "plugin"
+    ],
+    "license": "ISC",
+    "main": "lib/index.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/FlexShopper/hapi-plugins.git"
+    },
+    "eslintConfig": {
+        "extends": "@flexshopper/flexshopper"
+    },
+    "pre-commit": [
+        "lint",
+        "test-run",
+        "fix"
+    ],
+    "scripts": {
+        "dev": "nodemon lib/index.js -i logs",
+        "fix": "fixpack",
+        "lint": "eslint --ignore-path .gitignore --fix .",
+        "start": "node lib/index.js",
+        "test": "lab -t 100 -C -S -v -a code && npm run lint",
+        "test-lcov": "lab -t 100 -C -S -v -a code -c -r lcov -o ./coverage/lcov.info -r console -o stdout",
+        "test-cov-html": "lab -r html -o coverage/coverage.html"
+    }
+}

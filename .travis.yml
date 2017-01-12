@@ -1,0 +1,13 @@
+---
+language: node_js
+node_js:
+    - '6'
+    - '5'
+    - '4'
+branches:
+    only:
+        - master
+before_script:
+    - npm install -g gulp
+notifications:
+    slack: flexshopper:E1U7qVGEIWZua9AtCQfr4jNl#kraken-builds
