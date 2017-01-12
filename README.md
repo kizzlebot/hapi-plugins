@@ -1,20 +1,20 @@
-# @flexshopper/hapi-methods
+# @kizzlebot/hapi-plugins
 [![Build Status][travis-badge]][travis-url]
 [![Dependencies][david-badge]][david-url]
 [![Dev dependencies][david-dev-badge]][david-url]
 
-[travis-badge]: https://travis-ci.com/FlexShopper/hapi-methods.svg?token=Y5c2Yh3HiTw9G5oH7ZkQ&branch=master
-[travis-url]: https://travis-ci.com/FlexShopper/hapi-methods
-[david-badge]: https://david-dm.org/flexshopper/hapi-methods.svg
-[david-dev-badge]: https://david-dm.org/flexshopper/hapi-methods/dev-status.svg
-[david-url]: https://david-dm.org/flexshopper/hapi-methods
-[david-dev-url]: https://david-dm.org/flexshopper/hapi-methods#info=devDependencies
+[travis-badge]: https://travis-ci.com/FlexShopper/hapi-plugins?token=Y5c2Yh3HiTw9G5oH7ZkQ&branch=master
+[travis-url]: https://travis-ci.com/FlexShopper/hapi-plugins
+[david-badge]: https://david-dm.org/flexshopper/hapi-plugins.svg
+[david-dev-badge]: https://david-dm.org/flexshopper/hapi-plugins/dev-status.svg
+[david-url]: https://david-dm.org/flexshopper/hapi-plugins
+[david-dev-url]: https://david-dm.org/flexshopper/hapi-plugins#info=devDependencies
 
-Plugin to autoload methods based on patterns.
+Plugin to autoload plugins given relative path and glob pattern.  Optionally, `options.plugins[pluginName]` can be used to pass arguments to plugins
 
 ### How to use:
-- Install `hapi-methods` npm package in your project our plugin.
-`npm i @flexshopper/hapi-methods`
+- Install `hapi-plugins` npm package in your project our plugin.
+`npm i @flexshopper/hapi-plugins`
 - Register plugin in your hapi server:
 
 ### Registering
@@ -25,11 +25,17 @@ const server = new Hapi.Server();
 server.connection();
 
 server.register({
-    register: require('hapi-methods'),
+    register: require('hapi-plugins'),
     options: {
-        relativeTo: proccess.cwd() + '/methods',
-        includes: ['path/to/**/*methods.js'],
+        relativeTo: proccess.cwd() + '/plugins',
+        includes: ['path/to/**/*plugins.js'],
         ignore: ['*.git'],
+        // plugin options
+        plugins: {
+            myPlugin: {
+                host: '192.168.1.1'
+            }
+        }
     }
 }, (err) => {
   // continue application
@@ -42,11 +48,17 @@ registrations: [
     ...
     {
         plugin: {
-            register: 'hapi-methods',
+            register: 'hapi-plugins',
             options: {
-                relativeTo: proccess.cwd() + '/methods',
-                includes: ['path/to/**/*methods.js'],
+                relativeTo: proccess.cwd() + '/plugins',
+                includes: ['path/to/**/*plugins.js'],
                 ignore: ['*.git'],
+                // plugin options
+                plugins: {
+                    myPlugin: {
+                        host: '192.168.1.1'
+                    }
+                }
             }
         }
     }
@@ -73,54 +85,27 @@ Type: `string`
 
 The current working directory in which to search (defaults to `process.cwd()`)
 
+##### plugins
+
+Type: `object`
+
+key-value where `key` is your plugin name (ie `internals.register.attributes.name`) and value is options to pass to plugin
+
 
 #### Route Signature
 ```javascript
 'use strict';
 
 const internals = module.exports = {};
+internals.register = (server, options, next) => {
+    // ...do stuff
 
-internals.myNewMethod = {
-
-    method: (next) => {
-        return next();
-    },
-    options: {
-        cache: {
-            expiresIn: 60000,
-            generateTimeout: 60000
-        }
-    }
+    return next();
 };
 
-internals.anotherMethod = {
-
-    // if method is defined as function(), 'this' value is bound to server instance
-    method: function(next) {
-
-        // 'this' is bound to server, thus it is equal to hapi server instance
-        expect(this.plugins).to.exist();
-
-        return next();
-    }
+internals.register.attributes = {
+    name: 'myplugin:',
+    version: '0.0.1'
 };
 
-// This methods would be available as:
-
-server.methods.methodFileName.myNewMethod();
-server.methods.methodFileName.anotherMethod();
 ```
-
-### Filename adapting
-No matter what format your filenames are in, use camelcase to access the method.
-
-For example, if a method file name is: `foo-bar.js`, it has a method named myMethod() inside.
-You can access this method as:
-```javascript
-server.methods.fooBar.myMethod();
-```
-
-### 'this' binding
-If `internals.anotherMethod.method` is equal to regular function (non-arrow function)
-'this' will be bound to instance of `server`.
-
